@@ -71,6 +71,25 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.MGMT_CLIENT_SECRET, "Client Secret", "input",
                 "Client Secret of Application with Approved API", "", true, true,
                 Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.APPLICATION_MANAGEMENT_ENDPOINT,
+                "Asgardeo Application Management Endpoint", "input",
+                String.format("E.g., %s/api/server/v1/applications",
+                        AsgardeoConstants.BASE_URL_FORMAT), "", true, false,
+                Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.RESOURCE_MANAGEMENT_ENDPOINT,
+                "Asgardeo API Resource Management Endpoint", "input",
+                String.format("E.g., %s/api/server/v1/api-resources",
+                        AsgardeoConstants.BASE_URL_FORMAT), "", true, false,
+                Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ROLES_MANAGEMENT_ENDPOINT,
+                "Asgardeo Roles Endpoint", "input",
+                String.format("E.g., %s/scim2/v2/Roles",
+                        AsgardeoConstants.BASE_URL_FORMAT), "", true, false,
+                Collections.emptyList(), false));
+        configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ENABLE_ROLE_CREATION,
+                "Create roles in Asgardeo", "checkbox",
+                "Create roles in Asgardeo, corresponding to the roles used in WSO2 API Manager.",
+                "Enable", false, false, Collections.singletonList("Enable"), false));
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ACCESS_TOKEN_TYPE, "Prefer JWT Access Tokens", "checkbox",
                 "Choose to use JWT instead of Opaque as the Access Token Type", "Enable", false, false, Collections.singletonList("Enable"), false));
