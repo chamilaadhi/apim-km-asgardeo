@@ -1,12 +1,11 @@
-# Asgardeo Key Manager for WSO2 APIM 4.6
-A Key Manager Implementation to Integrate **Asgardeo** with **WSO2 API Manager 4.6**  
-  
-> <span style="color:#ee3333">⚠ Under active development ⚠</span>  
+# Asgardeo Key Manager for WSO2 API Manager
+A Key Manager Implementation to Integrate **Asgardeo** with **WSO2 API Manager**  
+   
 
 
 ___
 ## Overview
-This project provides a **Key Manager** for **WSO2 APIM 4.6** that delegates Key Manager responsibilities to **[Asgardeo](https://console.asgardeo.io)**  
+This project provides a **Key Manager** for **WSO2 API Manager** that delegates Key Manager responsibilities to **[Asgardeo](https://console.asgardeo.io)**  
   
 This Key Manager integrates with Asgardeo Management APIs to support:
 - Dynamic Client Registration
@@ -39,12 +38,18 @@ ___
     > ⚠ If you don't see the required API Resource, wait a minute or two for the API Resources list to finish loading. Reload the page if the issue doesn't resolve.  
 
     > ⚠ Ensure you have authorized the **Management API** version of the API Resource. It is a common mistake to authorize the **Organization API** version instead. 
-7. Repeat steps 5 and 6 for Management APIs `Application Management API` and `API Resource Management API`. 
+7. Repeat steps 5 and 6 for Management APIs `SCIM Roles V1/V2 API` and `API Resource Management API`. 
 8. Note the 
-   - **Organization Name**
    - **`Client ID`** and **`Client Secret`**  (found in the **Protocol** tab).
 
-### C. Configuring the Asgardeo Key Manager in WSO2 APIM
+### C. Creating the API Resource that contains the scopes
+
+1. Navigate to **Resources** → **API Resources** → **`+ New API Resource`**
+2. Choose a display name (eg. APIM_GLOBAL_SCOPES) and unique identifier (eg. /api/server/v1/scope-resource), and click **Next**.
+3. Ignore scopes additions in the scopes page and click on **Next**.
+4. Ensure authorization is enabled in the authorization page and click on **Create**.
+
+### D. Configuring the Asgardeo Key Manager in WSO2 APIM
 
 1. Log in to the **WSO2 API Manager Admin Portal**: `https://<APIM_HOST>/admin`
 
@@ -55,26 +60,28 @@ ___
 - **Display Name**: A user-friendly name (e.g., `Asgardeo`)
 4. Set the **Key Manager Type** to `Asgardeo`
 
-5. Under **Key Manager Endpoints**, configure the **Well-Known URL**: `
+5. Under **Key Manager Endpoints**, configure the **Well-Known URL**, replacing `<YOUR_ORGANIZATION>` with the name of your organization: `
 https://api.asgardeo.io/t/<YOUR_ORGANIZATION>/oauth2/token/.well-known/openid-configuration`
 
 6. Click **Import**.
 - All endpoint fields will be populated automatically **except** the Scope Management Endpoint.
 
-7. Manually set **Scope Management Endpoint**: `none` (it isn't required to be explicitly set right now)
+7. Manually set **Scope Management Endpoint**: `none` 
 
 8. Under **Grant Types**, review the auto-populated list and remove any grant types you do not wish to support.
 
-9. Under **Connector Configurations**, enter the following values noted in section **B**:
+9. Under **Connector Configurations**, enter the following:
    - **Organization Name**
-   - **Client ID**
-   - **Client Secret**
+   - **Client ID** (noted before)
+   - **Client Secret** (noted before)
+   - **Display name of the API Resource containing scopes**
+   - **The API endpoints according to the format given in the description**
+   - **Enable** Role creation of you want to map scopes to roles in Asgardeo
 
 10. Click **Add** to save the Key Manager.
 
----
 
-### D. Verifying the Configuration
+### E. Verifying the Configuration
 
 1. Log in to the **Developer Portal**: `https://<APIM_HOST>/devportal`
 2. Create a new Application.
@@ -118,7 +125,7 @@ The scopes required in the API must be mirrored in Asgardeo. The following steps
 #### What Happens Internally
 
 - APIM creates or updates the scope in **Asgardeo**
-- The scope is added under a **common API resource** in Asgardeo
+- The scope is added to the **API resource** created in Setting Up Section C in Asgardeo
 - At this stage, the scope **exists** in Asgardeo but is **not yet usable** by applications
 
 
@@ -141,7 +148,6 @@ Scopes must be explicitly authorized by an Asgardeo Admin for the OAuth applicat
 
 > ⚠ Only scopes explicitly allowed here can be requested in access token requests.
 
----
 
 ### Step 3: Request Access Tokens with Scopes
 

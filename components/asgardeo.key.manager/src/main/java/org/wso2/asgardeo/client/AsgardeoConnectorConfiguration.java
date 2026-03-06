@@ -18,6 +18,7 @@
 
 package org.wso2.asgardeo.client;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.service.component.annotations.Component;
 import org.wso2.carbon.apimgt.api.model.ConfigurationDto;
 import org.wso2.carbon.apimgt.api.model.KeyManagerConnectorConfiguration;
@@ -60,33 +61,33 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ORG_NAME,
                 "Organization Name", "input",
-                "Name of the Organization with ", "", true, false,
+                "Name of the Asgardeo organization", StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.MGMT_CLIENT_ID,
                 "Client ID", "input",
-                "Client ID of the Management Application", "", true, false,
+                "Client ID of the management application", StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.MGMT_CLIENT_SECRET,
                 "Client Secret", "input",
-                "Client Secret of the Management Application", "", true, true,
+                "Client secret of the management application", StringUtils.EMPTY, true, true,
                 Collections.emptyList(), false));
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.GLOBAL_API_RESOURCE_NAME,
-                "Global Scopes API Resource Name", "input",
-                "Name of the API Resource in which WSO2 API Manager scopes reside", "", true, false,
+                "Global scopes API resource name", "input",
+                "Name of the API resource in which WSO2 API Manager scopes reside", StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.RESOURCE_MANAGEMENT_ENDPOINT,
                 "Asgardeo API Resource Management Endpoint", "input",
                 String.format("E.g., %s/api/server/v1/api-resources",
-                        AsgardeoConstants.BASE_URL_FORMAT), "", true, false,
+                        AsgardeoConstants.BASE_URL_FORMAT), StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ROLES_MANAGEMENT_ENDPOINT,
                 "Asgardeo Roles Endpoint", "input",
                 String.format("E.g., %s/scim2/v2/Roles",
-                        AsgardeoConstants.BASE_URL_FORMAT), "", true, false,
+                        AsgardeoConstants.BASE_URL_FORMAT), StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ENABLE_ROLE_CREATION,
                 "Create roles in Asgardeo", "checkbox",
@@ -107,24 +108,24 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.APPLICATION_TOKEN_LIFETIME,
                         "Lifetime of the Application Token ", "input",
-                        "Type Lifetime of the Application Token " +
-                        "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
+                        "Type lifetime of the application token " +
+                                "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.USER_TOKEN_LIFETIME,
                         "Lifetime of the User Token ", "input",
-                        "Type Lifetime of the User Token " + "in seconds ",
+                        "Type lifetime of the user token " + "in seconds ",
                         APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.REFRESH_TOKEN_LIFETIME,
                         "Lifetime of the Refresh Token ", "input",
-                        "Type Lifetime of the Refresh Token " + "in seconds ",
+                        "Type lifetime of the refresh token " + "in seconds ",
                         APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.ID_TOKEN_LIFETIME,
-                        "Lifetime of the ID Token", "input", "Type Lifetime of the ID Token " +
+                        "Lifetime of the ID Token", "input", "Type lifetime of the ID token " +
                         "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
 
@@ -136,7 +137,7 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
 
         ConfigurationDto configurationDtoPkcePlainText =
                 new ConfigurationDto(AsgardeoConstants.PKCE_SUPPORT_PLAIN,
-                        "Support PKCE Plain text", "checkbox",
+                        "Support PKCE plain text", "checkbox",
                         "S256 is recommended, plain text too can be used.",
                         String.valueOf(false), false, false, Collections.EMPTY_LIST, false);
 
@@ -149,7 +150,6 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
                         String.valueOf(false), false, false, Collections.EMPTY_LIST, false);
 
         applicationConfigurationsList.add(configurationDtoBypassClientCredentials);
-
 
         return applicationConfigurationsList;
     }
@@ -167,10 +167,12 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
     }
 
     public String getDefaultScopesClaim() {
+
         return AsgardeoConstants.DEFAULT_SCOPES_CLAIM;
     }
 
     public String getDefaultConsumerKeyClaim() {
+
         return AsgardeoConstants.DEFAULT_CONSUMER_KEY_CLAIM;
     }
 }

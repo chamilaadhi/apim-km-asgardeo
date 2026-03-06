@@ -22,6 +22,7 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.HttpHeaders;
 import org.wso2.asgardeo.client.AsgardeoConstants;
 import org.wso2.carbon.apimgt.impl.kmclient.KeyManagerClientException;
 import org.wso2.carbon.apimgt.impl.kmclient.model.AuthClient;
@@ -34,6 +35,7 @@ import java.util.Base64;
  * Represents Auth Interceptor that retrieves / refreshes access token required for Asgardeo Mgmt OAuth App Calls
  */
 public class AsgardeoDCRAuthInterceptor implements RequestInterceptor {
+
     private static final Log log = LogFactory.getLog(AsgardeoDCRAuthInterceptor.class);
 
     private static final long REFRESH_SKEW_MS = 10000; // buffer time of 10 secs
@@ -46,6 +48,7 @@ public class AsgardeoDCRAuthInterceptor implements RequestInterceptor {
 
     public AsgardeoDCRAuthInterceptor(
             AuthClient tokenClient, String consumerKey, String consumerSecret) {
+
         this.tokenClient = tokenClient;
         this.mgmtClientId = consumerKey;
         this.mgmtClientSecret = consumerSecret;
@@ -54,22 +57,24 @@ public class AsgardeoDCRAuthInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate requestTemplate) {
+
         if (cachedToken == null || tokenExpired()) {
             getAccessToken();
         }
-        requestTemplate.header("Authorization", "Bearer ".concat(cachedToken.getToken()));
+        requestTemplate.header(HttpHeaders.AUTHORIZATION, "Bearer ".concat(cachedToken.getToken()));
     }
 
     private boolean tokenExpired() {
+
         return System.currentTimeMillis() + REFRESH_SKEW_MS >
                 (createdAt + cachedToken.getExpiry() * 1000);
     }
-
 
     /**
      * Renew the access token of the management API
      */
     private void getAccessToken() {
+
         try {
             String credentials = mgmtClientId + ":" + mgmtClientSecret;
             String authToken = Base64.getEncoder().encodeToString(credentials.getBytes(StandardCharsets.UTF_8));

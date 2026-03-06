@@ -18,7 +18,6 @@
 
 package org.wso2.asgardeo.client;
 
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -91,8 +90,10 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     private AsgardeoAPIResourceScopesClient apiResourceScopesClient;
     private AsgardeoSCIMRolesClient asgardeoSCIMRolesClient;
 
-    private String mgmtClientId, mgmtClientSecret; //client id and secret of management app
-    private String globalApiResourceId, globalApiResourceName;
+    private String mgmtClientId;
+    private String mgmtClientSecret; //client id and secret of management app
+    private String globalApiResourceId;
+    private String globalApiResourceName;
 
     private boolean enableRoleCreation;
 
@@ -105,7 +106,18 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         String baseURL = AsgardeoConstants.ASGARDEO_BASE_URL;
 
         mgmtClientId = (String) configuration.getParameter(AsgardeoConstants.MGMT_CLIENT_ID);
+
+        if (mgmtClientId == null || mgmtClientId.isBlank()) {
+            throw new APIManagementException(
+                    "The Asgardeo application client ID in the configuration is missing or empty");
+        }
+
         mgmtClientSecret = (String) configuration.getParameter(AsgardeoConstants.MGMT_CLIENT_SECRET);
+
+        if (mgmtClientSecret == null || mgmtClientSecret.isBlank()) {
+            throw new APIManagementException(
+                    "The Asgardeo application client secret in the configuration is missing or empty");
+        }
 
         if (configuration.getParameter(AsgardeoConstants.ENABLE_ROLE_CREATION) instanceof Boolean) {
             enableRoleCreation = (Boolean) configuration.getParameter(AsgardeoConstants.ENABLE_ROLE_CREATION);
@@ -169,7 +181,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                 .target(AsgardeoIntrospectionClient.class, introspectionEndpoint);
 
         AsgardeoDCRAuthInterceptor interceptor = new AsgardeoDCRAuthInterceptor(authClient,
-                                                                                mgmtClientId, mgmtClientSecret);
+                mgmtClientId, mgmtClientSecret);
 
         dcrClient = feign.Feign.builder()
                 .client(new feign.okhttp.OkHttpClient())
@@ -234,7 +246,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         String user = (String) in.getParameter(ApplicationConstants.OAUTH_CLIENT_USERNAME);
 
         String clientName = (user != null ? user : "apim") + "_" + appName + "_" + appId.substring(0, 7) +
-                (keyType != null ? "_" + keyType : "");
+                (keyType != null ? "_" + keyType : StringUtils.EMPTY);
 
         AsgardeoDCRClientInfo body = new AsgardeoDCRClientInfo();
         body.setClientName(clientName);
@@ -323,7 +335,6 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
         OAuthApplicationInfo oAuthApplicationInfo = oAuthAppRequest.getOAuthApplicationInfo();
         AsgardeoDCRClientInfo body = getClientInfo(oAuthApplicationInfo);
-
         setAdditionalPropertiesToClient(oAuthApplicationInfo, body);
 
         try {
@@ -358,7 +369,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setApplicationTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
+                        if (log.isDebugEnabled()) {
+                            log.debug("Ignoring application token lifetime value as it is not a valid number");
+                        }
                     }
                 }
             }
@@ -378,7 +391,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setUserTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
+                        if (log.isDebugEnabled()) {
+                            log.debug("Ignoring user token lifetime value as it is not a valid number");
+                        }
                     }
                 }
             }
@@ -398,7 +413,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setRefreshTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
+                        if (log.isDebugEnabled()) {
+                            log.debug("Ignoring refresh token lifetime value as it is not a valid number");
+                        }
                     }
                 }
             }
@@ -418,7 +435,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setIdTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
+                        if (log.isDebugEnabled()) {
+                            log.debug("Ignoring ID token lifetime value as it is not a valid number");
+                        }
                     }
                 }
             }
@@ -429,12 +448,8 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                     additionalProperties.get(AsgardeoConstants.PKCE_MANDATORY);
             if (pkceMandatoryValue instanceof String) {
                 if (!AsgardeoConstants.PKCE_MANDATORY.equals(pkceMandatoryValue)) {
-                    try {
-                        boolean pkceMandatory = Boolean.parseBoolean((String) pkceMandatoryValue);
-                        body.setPkceMandatory(pkceMandatory);
-                    } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
-                    }
+                    boolean pkceMandatory = Boolean.parseBoolean((String) pkceMandatoryValue);
+                    body.setPkceMandatory(pkceMandatory);
                 }
             }
         }
@@ -444,12 +459,8 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                     additionalProperties.get(AsgardeoConstants.PKCE_SUPPORT_PLAIN);
             if (pkceSupportPlainValue instanceof String) {
                 if (!AsgardeoConstants.PKCE_SUPPORT_PLAIN.equals(pkceSupportPlainValue)) {
-                    try {
-                        boolean pkceSupportPlain = Boolean.parseBoolean((String) pkceSupportPlainValue);
-                        body.setPkceSupportPlain(pkceSupportPlain);
-                    } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
-                    }
+                    boolean pkceSupportPlain = Boolean.parseBoolean((String) pkceSupportPlainValue);
+                    body.setPkceSupportPlain(pkceSupportPlain);
                 }
             }
         }
@@ -459,12 +470,8 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                     additionalProperties.get(AsgardeoConstants.PUBLIC_CLIENT);
             if (publicClientValue instanceof String) {
                 if (!AsgardeoConstants.PUBLIC_CLIENT.equals(publicClientValue)) {
-                    try {
-                        boolean pkceSupportPlain = Boolean.parseBoolean((String) publicClientValue);
-                        body.setPublicClient(pkceSupportPlain);
-                    } catch (NumberFormatException e) {
-                        // No need to throw as its due to not a number sent.
-                    }
+                    boolean pkceSupportPlain = Boolean.parseBoolean((String) publicClientValue);
+                    body.setPublicClient(pkceSupportPlain);
                 }
             }
         }
@@ -473,6 +480,10 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public OAuthApplicationInfo updateApplicationOwner(OAuthAppRequest appInfoDTO, String owner)
             throws APIManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Application owner update is not supported for this key manager");
+        }
 
         return null; //implementation is not applicable
     }
@@ -513,7 +524,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Gets new access token and returns it in an AccessTokenInfo object.
-     *
+     * <p>
      * Mirrors getNewApplicationAccessToken method in WSO2IS7KeyManager
      *
      * @param tokenRequest Info of the token needed.
@@ -671,6 +682,10 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public OAuthApplicationInfo buildFromJSON(String s) throws APIManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Building OAuth application information from JSON is not supported for this key manager.");
+        }
+
         return null;
     }
 
@@ -691,7 +706,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public boolean registerNewResource(API api, Map resourceAttributes) throws APIManagementException {
 
-        // invoke APIResource registration endpoint of the authorization server and creates a new resource.
+        if (log.isDebugEnabled()) {
+            log.debug("New resource registration is not supported for this key manager");
+        }
 
         return true;
     }
@@ -699,7 +716,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public Map getResourceByApiId(String apiId) throws APIManagementException {
 
-        //  retrieves the registered resource by the given API ID from the  APIResource registration endpoint.
+        if (log.isDebugEnabled()) {
+            log.debug("Resource retrieval by API ID is not supported for this key manager");
+        }
 
         return null;
     }
@@ -707,25 +726,45 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public boolean updateRegisteredResource(API api, Map resourceAttributes) throws APIManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Registered resource update is not supported for this key manager");
+        }
+
         return true;
     }
 
     @Override
     public void deleteRegisteredResourceByAPIId(String apiID) throws APIManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Resource deletion by API ID is not supported for this key manager");
+        }
     }
 
     @Override
     public void deleteMappedApplication(String clientId) throws APIManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Mapped application deletion is not supported for this key manager");
+        }
     }
 
     @Override
-    public Set<String> getActiveTokensByConsumerKey(String s) throws APIManagementException {
+    public Set<String> getActiveTokensByConsumerKey(String consumerKey) throws APIManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving active tokens by consumer key is not supported for this key manager.");
+        }
 
         return Collections.emptySet();
     }
 
     @Override
-    public AccessTokenInfo getAccessTokenByConsumerKey(String s) throws APIManagementException {
+    public AccessTokenInfo getAccessTokenByConsumerKey(String consumerKey) throws APIManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving access token information by consumer key is not supported for this key manager.");
+        }
 
         return null;
     }
@@ -733,11 +772,19 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public String getNewApplicationConsumerSecret(AccessTokenRequest accessTokenRequest) throws APIManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Generating a new application consumer secret is not supported for this key manager.");
+        }
+
         return null;
     }
 
     @Override
     public Map<String, Set<Scope>> getScopesForAPIS(String apiIdsString) throws APIManagementException {
+
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving scopes for APIs is not supported for this key manager.");
+        }
 
         return null;
     }
@@ -781,6 +828,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public void attachResourceScopes(API api, Set<URITemplate> uriTemplates) throws APIManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Attaching resource scopes is not supported for this key manager.");
+        }
     }
 
     @Override
@@ -821,6 +871,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public void detachResourceScopes(API api, Set<URITemplate> uriTemplates) throws APIManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Detaching resource scopes is not supported for this key manager.");
+        }
     }
 
     @Override
@@ -870,6 +923,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public void validateScopes(Set<Scope> scopes) throws APIManagementException {
 
+        if (log.isDebugEnabled()) {
+            log.debug("Scopes validation is not supported for this key manager.");
+        }
     }
 
     @Override
@@ -915,7 +971,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         }
         // When role creation is enabled, conventions of the WSO2 IS7 migration client are followed for roles.
         if (roleName.startsWith("Internal/")) {
-            return roleName.replace("Internal/", "");
+            return roleName.replace("Internal/", StringUtils.EMPTY);
         } else if (roleName.startsWith("Application/")) {
             throw new APIManagementException("Role: " + roleName + " is invalid.");
         }
@@ -924,7 +980,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Retrieves the Asgardeo role ID corresponding to the given role display name.
-     *
+     * <p>
      * Mirrors the getWSO2IS7RoleId method in the WSO2IS7KeyManager implementation
      *
      * @param roleDisplayName The display name of the role to search for in Asgardeo.
@@ -948,9 +1004,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Executes a SCIM role search request against Asgardeo using the given filter.
-     *
+     * <p>
      * Mirrors searchRoles on WSO2IS7KeyManager
-     *
+     * <p>
      * This method constructs a SCIM 2.0 search request payload, including the
      * required schema identifier and the provided filter expression. It then
      * invokes the Asgardeo SCIM Roles client to retrieve matching roles.
@@ -959,7 +1015,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
      *               the search request is sent without a filter.
      * @return A JsonArray containing the matching role resources.
      * @throws feign.FeignException If an error occurs while invoking the
-     *                               Asgardeo SCIM API.
+     *                              Asgardeo SCIM API.
      */
     private JsonArray searchRoles(String filter) throws feign.FeignException {
 
@@ -976,7 +1032,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Extracts the list of role names associated with the given scope.
-     *
+     * <p>
      * Mirrors the getRoles method in the WSO2IS7KeyManager implementation.
      *
      * @param scope The scope containing role information as a comma-separated string.
@@ -993,11 +1049,11 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Creates a new role in Asgardeo with the given display name and permissions.
-     *
+     * <p>
      * Mirrors the createWSO2IS7Role method in the WSO2IS7KeyManager implementation.
      *
      * @param displayName The display name of the role to be created.
-     * @param scopes The list of permission mappings to be associated with the role.
+     * @param scopes      The list of permission mappings to be associated with the role.
      * @throws APIManagementException If role creation fails while communicating with Asgardeo.
      */
     private void createAsgardeoRole(String displayName, List<Map<String, String>> scopes)
@@ -1015,13 +1071,13 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Adds the given scope as a permission to the specified Asgardeo role.
-     *
+     * <p>
      * Mirrors the addScopeToWSO2IS7Role method in the WSO2IS7KeyManager implementation.
-     *
+     * <p>
      * Retrieves the existing role, preserves its current permissions, adds the
      * new scope as an additional permission, and updates the role accordingly.
      *
-     * @param scope The scope to be added to the role as a permission.
+     * @param scope  The scope to be added to the role as a permission.
      * @param roleId The ID of the role to be updated.
      * @throws APIManagementException If updating the role fails while communicating with Asgardeo.
      */
@@ -1051,7 +1107,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Replaces the permissions of the specified Asgardeo role with the provided list of scopes.
-     *
+     * <p>
      * Mirrors the updateWSO2IS7RoleWithScopes method in the WSO2IS7KeyManager implementation.
      *
      * @param roleId The ID of the role to be updated.
@@ -1076,14 +1132,14 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Removes the given scope from the specified roles in Asgardeo.
-     *
+     * <p>
      * Mirrors the removeWSO2IS7RoleToScopeBindings method in the WSO2IS7KeyManager implementation.
-     *
+     * <p>
      * For each role, retrieves the existing permissions, excludes the specified
      * scope, and updates the role with the remaining permissions.
      *
      * @param scopeName The name (value) of the scope to be removed.
-     * @param roles The list of role names from which the scope should be removed.
+     * @param roles     The list of role names from which the scope should be removed.
      * @throws APIManagementException If updating any role fails while communicating with Asgardeo.
      */
     private void removeAsgardeoRoleToScopeBindings(String scopeName, List<String> roles) throws APIManagementException {
@@ -1116,9 +1172,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Creates role-to-scope bindings in Asgardeo for the given set of scopes.
-     *
+     * <p>
      * Mirrors the createWSO2IS7RoleToScopeBindings method in the WSO2IS7KeyManager implementation.
-     *
+     * <p>
      * For each scope, iterates through its associated roles. If the role exists
      * in Asgardeo, the scope is added as a permission. If the role does not exist
      * and role creation is enabled, a new role is created with the scope as its
@@ -1126,7 +1182,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
      *
      * @param scopes The set of scopes containing role bindings to be synchronized.
      * @throws APIManagementException If role lookup, creation, or update fails while
-     * communicating with Asgardeo.
+     *                                communicating with Asgardeo.
      */
     private void createAsgardeoRoleToScopeBindings(Set<Scope> scopes) throws APIManagementException {
 
@@ -1155,14 +1211,14 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Retrieves the list of Asgardeo role names that contain the given scope as a permission.
-     *
+     * <p>
      * Mirrors the getWSO2IS7RolesHavingScope method in the WSO2IS7KeyManager implementation.
-     *
+     * <p>
      * Iterates through the provided roles and returns the display names of roles
      * that include the specified scope in their permissions.
      *
      * @param scopeName The name (value) of the scope to check within role permissions.
-     * @param roles The JsonArray of role objects retrieved from Asgardeo.
+     * @param roles     The JsonArray of role objects retrieved from Asgardeo.
      * @return A list of role display names that have the specified scope.
      */
     private List<String> getAsgardeoRolesHavingScope(String scopeName, JsonArray roles) {
@@ -1187,9 +1243,9 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
     /**
      * Converts Asgardeo role names into their corresponding API Manager role names.
-     *
+     * <p>
      * Mirrors the getAPIMRolesFromIS7Roles method in the WSO2IS7KeyManager implementation.
-     *
+     * <p>
      * Removes the "apim_primary_" prefix from roles created by API Manager.
      * For other roles, prefixes them with "Internal/" to match API Manager
      * role naming conventions.
@@ -1201,24 +1257,24 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
         return asgardeoRoles.stream()
                 .map(roleName -> roleName.startsWith("apim_primary_")
-                        ? roleName.replaceFirst("^apim_primary_", "")
+                        ? roleName.replaceFirst("^apim_primary_", StringUtils.EMPTY)
                         : "Internal/" + roleName)
                 .collect(Collectors.toList());
     }
 
     /**
      * Synchronizes role-to-scope bindings in Asgardeo with the current state of the given scope.
-     *
+     * <p>
      * Mirrors the role-binding update logic in the updateScopes method of the
      * WSO2IS7KeyManager implementation.
-     *
+     * <p>
      * Determines which role bindings need to be added or removed by comparing
      * the roles defined in API Manager with the existing bindings in Asgardeo,
      * then updates Asgardeo accordingly.
      *
      * @param scope The scope whose role bindings should be synchronized.
      * @throws KeyManagerClientException If a client-side error occurs during synchronization.
-     * @throws APIManagementException If role lookup or update fails while communicating with Asgardeo.
+     * @throws APIManagementException    If role lookup or update fails while communicating with Asgardeo.
      */
     private void syncRoleBindingsToScope(Scope scope) throws KeyManagerClientException, APIManagementException {
 
@@ -1268,7 +1324,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                     String additionalProperty = entry.getValue().getAsString();
                     if (org.apache.commons.lang3.StringUtils.isNotBlank(additionalProperty) &&
                             !org.apache.commons.lang3.StringUtils
-                            .equals(additionalProperty, APIConstants.KeyManager.NOT_APPLICABLE_VALUE)) {
+                                    .equals(additionalProperty, APIConstants.KeyManager.NOT_APPLICABLE_VALUE)) {
                         try {
                             if (AsgardeoConstants.PKCE_MANDATORY.equals(entry.getKey()) ||
                                     AsgardeoConstants.PKCE_SUPPORT_PLAIN.equals(entry.getKey()) ||

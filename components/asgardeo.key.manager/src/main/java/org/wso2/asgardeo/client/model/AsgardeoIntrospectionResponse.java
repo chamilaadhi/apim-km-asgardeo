@@ -62,98 +62,122 @@ public class AsgardeoIntrospectionResponse {
     private String jti;
 
     public boolean isActive() {
+
         return active;
     }
 
     public void setActive(boolean active) {
+
         this.active = active;
     }
 
     public String getScope() {
+
         return scope;
     }
 
     public void setScope(String scope) {
+
         this.scope = scope;
     }
 
     public String getClientId() {
+
         return clientId;
     }
 
     public void setClientId(String clientId) {
+
         this.clientId = clientId;
     }
 
     public String getTokenType() {
+
         return tokenType;
     }
 
     public void setTokenType(String tokenType) {
+
         this.tokenType = tokenType;
     }
 
     public String getAut() {
+
         return aut;
     }
 
     public void setAut(String aut) {
+
         this.aut = aut;
     }
 
     public Long getExp() {
+
         return exp;
     }
 
     public void setExp(Long exp) {
+
         this.exp = exp;
     }
 
     public Long getIat() {
+
         return iat;
     }
 
     public void setIat(Long iat) {
+
         this.iat = iat;
     }
 
     public Long getNbf() {
+
         return nbf;
     }
 
     public void setNbf(Long nbf) {
+
         this.nbf = nbf;
     }
 
     public String getIss() {
+
         return iss;
     }
 
     public void setIss(String iss) {
+
         this.iss = iss;
     }
 
     public String getSub() {
+
         return sub;
     }
 
     public void setSub(String sub) {
+
         this.sub = sub;
     }
 
     public String getAud() {
+
         return aud;
     }
 
     public void setAud(String aud) {
+
         this.aud = aud;
     }
 
     public String getJti() {
+
         return jti;
     }
 
     public void setJti(String jti) {
+
         this.jti = jti;
     }
 }

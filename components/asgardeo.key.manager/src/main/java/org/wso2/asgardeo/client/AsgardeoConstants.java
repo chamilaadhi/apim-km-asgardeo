@@ -22,6 +22,7 @@ package org.wso2.asgardeo.client;
  * This class will hold constants related to Asgardeo key manager implementation.
  */
 public class AsgardeoConstants {
+
     public static final String ASGARDEO_TYPE = "Asgardeo";
     public static final String DISPLAY_NAME = "Asgardeo";
     public static final String ASGARDEO_BASE_URL = "https://api.asgardeo.io";
@@ -65,5 +66,6 @@ public class AsgardeoConstants {
     public static final String PUBLIC_CLIENT = "ext_public_client";
 
     AsgardeoConstants() {
+
     }
 }

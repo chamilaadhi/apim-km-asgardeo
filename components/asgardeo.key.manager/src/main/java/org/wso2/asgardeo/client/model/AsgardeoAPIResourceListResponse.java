@@ -26,6 +26,7 @@ import java.util.List;
  * Represents the API resources list returned from Asgardeo used when searching for Global API Resource.
  */
 public class AsgardeoAPIResourceListResponse {
+
     @SerializedName("totalResults")
     private int totalResults;
 
@@ -33,18 +34,22 @@ public class AsgardeoAPIResourceListResponse {
     private List<AsgardeoAPIResourceResponse> apiResources;
 
     public int getTotalResults() {
+
         return totalResults;
     }
 
     public void setTotalResults(int totalResults) {
+
         this.totalResults = totalResults;
     }
 
     public List<AsgardeoAPIResourceResponse> getApiResources() {
+
         return apiResources;
     }
 
     public void setApiResources(List<AsgardeoAPIResourceResponse> apiResources) {
+
         this.apiResources = apiResources;
     }
 }

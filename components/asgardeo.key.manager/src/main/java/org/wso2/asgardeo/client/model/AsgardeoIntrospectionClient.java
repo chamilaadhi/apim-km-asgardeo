@@ -21,15 +21,17 @@ package org.wso2.asgardeo.client.model;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
+import org.apache.http.HttpHeaders;
 
 /**
  * Represents the Asgardeo Introspection Client.
  */
 public interface AsgardeoIntrospectionClient {
+
     @RequestLine("POST")
     @Headers({
-            "Content-Type: application/x-www-form-urlencoded",
-            "Authorization: Basic {basic}"
+            HttpHeaders.CONTENT_TYPE + ": application/x-www-form-urlencoded",
+            HttpHeaders.AUTHORIZATION + ": Basic {basic}"
     })
     AsgardeoIntrospectionResponse introspect(@Param("token") String token,
                                              @Param("basic") String basic)

@@ -31,10 +31,12 @@ public class AsgardeoPatchRoleOperationInfo {
     private List<Operation> operations;
 
     public List<Operation> getOperations() {
+
         return operations;
     }
 
     public void setOperations(List<Operation> operations) {
+
         this.operations = operations;
     }
 
@@ -53,26 +55,32 @@ public class AsgardeoPatchRoleOperationInfo {
         private Value value;
 
         public String getOp() {
+
             return op;
         }
 
         public void setOp(String op) {
+
             this.op = op;
         }
 
         public String getPath() {
+
             return path;
         }
 
         public void setPath(String path) {
+
             this.path = path;
         }
 
         public Value getValue() {
+
             return value;
         }
 
         public void setValue(Value value) {
+
             this.value = value;
         }
     }
@@ -86,10 +94,12 @@ public class AsgardeoPatchRoleOperationInfo {
         private List<Permission> permissions;
 
         public List<Permission> getPermissions() {
+
             return permissions;
         }
 
         public void setPermissions(List<Permission> permissions) {
+
             this.permissions = permissions;
         }
     }
@@ -106,18 +116,22 @@ public class AsgardeoPatchRoleOperationInfo {
         private String display;
 
         public String getValue() {
+
             return value;
         }
 
         public void setValue(String value) {
+
             this.value = value;
         }
 
         public String getDisplay() {
+
             return display;
         }
 
         public void setDisplay(String display) {
+
             this.display = display;
         }
     }

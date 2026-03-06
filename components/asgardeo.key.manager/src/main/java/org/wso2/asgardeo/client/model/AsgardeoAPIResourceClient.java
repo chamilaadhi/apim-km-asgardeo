@@ -21,7 +21,7 @@ package org.wso2.asgardeo.client.model;
 import feign.Headers;
 import feign.Param;
 import feign.RequestLine;
-
+import org.apache.http.HttpHeaders;
 
 /**
  * Represents the Asgardeo API resource API call client.
@@ -33,7 +33,7 @@ public interface AsgardeoAPIResourceClient {
             throws feign.FeignException;
 
     @RequestLine(("PATCH /{apiResourceId}"))
-    @Headers("Content-Type: application/json")
+    @Headers(HttpHeaders.CONTENT_TYPE + ": application/json")
     void addScopes(@Param("apiResourceId") String apiResourceId, AsgardeoScopePatchRequest body)
             throws feign.FeignException;
 }
