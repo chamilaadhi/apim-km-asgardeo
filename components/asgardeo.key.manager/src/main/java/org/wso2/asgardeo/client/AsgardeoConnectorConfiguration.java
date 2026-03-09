@@ -80,12 +80,12 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
                 Collections.emptyList(), false));
 
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.RESOURCE_MANAGEMENT_ENDPOINT,
-                "Asgardeo API Resource Management Endpoint", "input",
+                "Asgardeo API resource management endpoint", "input",
                 String.format("E.g., %s/api/server/v1/api-resources",
                         AsgardeoConstants.BASE_URL_FORMAT), StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
         configurationDtoList.add(new ConfigurationDto(AsgardeoConstants.ROLES_MANAGEMENT_ENDPOINT,
-                "Asgardeo Roles Endpoint", "input",
+                "Asgardeo roles endpoint", "input",
                 String.format("E.g., %s/scim2/v2/Roles",
                         AsgardeoConstants.BASE_URL_FORMAT), StringUtils.EMPTY, true, false,
                 Collections.emptyList(), false));
@@ -107,25 +107,25 @@ public class AsgardeoConnectorConfiguration implements KeyManagerConnectorConfig
         List<ConfigurationDto> applicationConfigurationsList = new ArrayList();
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.APPLICATION_TOKEN_LIFETIME,
-                        "Lifetime of the Application Token ", "input",
+                        "Lifetime of the application token ", "input",
                         "Type lifetime of the application token " +
                                 "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.USER_TOKEN_LIFETIME,
-                        "Lifetime of the User Token ", "input",
+                        "Lifetime of the user token ", "input",
                         "Type lifetime of the user token " + "in seconds ",
                         APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.REFRESH_TOKEN_LIFETIME,
-                        "Lifetime of the Refresh Token ", "input",
+                        "Lifetime of the refresh token ", "input",
                         "Type lifetime of the refresh token " + "in seconds ",
                         APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
         applicationConfigurationsList
                 .add(new ConfigurationDto(AsgardeoConstants.ID_TOKEN_LIFETIME,
-                        "Lifetime of the ID Token", "input", "Type lifetime of the ID token " +
+                        "Lifetime of the ID token", "input", "Type lifetime of the ID token " +
                         "in seconds ", APIConstants.KeyManager.NOT_APPLICABLE_VALUE, false, false,
                         Collections.EMPTY_LIST, false));
 

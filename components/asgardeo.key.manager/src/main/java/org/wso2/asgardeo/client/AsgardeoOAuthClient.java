@@ -107,14 +107,14 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
 
         mgmtClientId = (String) configuration.getParameter(AsgardeoConstants.MGMT_CLIENT_ID);
 
-        if (mgmtClientId == null || mgmtClientId.isBlank()) {
+        if (StringUtils.isBlank(mgmtClientId)) {
             throw new APIManagementException(
                     "The Asgardeo application client ID in the configuration is missing or empty");
         }
 
         mgmtClientSecret = (String) configuration.getParameter(AsgardeoConstants.MGMT_CLIENT_SECRET);
 
-        if (mgmtClientSecret == null || mgmtClientSecret.isBlank()) {
+        if (StringUtils.isBlank(mgmtClientSecret)) {
             throw new APIManagementException(
                     "The Asgardeo application client secret in the configuration is missing or empty");
         }
@@ -230,7 +230,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         try {
             created = dcrClient.create(body);
         } catch (feign.FeignException e) {
-            handleException("Cannot create OAuth Application: " + body.getClientName() + " for Application "
+            handleException("Cannot create OAuth application: " + body.getClientName() + " for application "
                     + oAuthApplicationInfo.getClientName(), e);
             return null;
         }
@@ -254,7 +254,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         List<String> grantTypes = getGrantTypesFromOAuthApp(in);
         body.setGrantTypes(grantTypes);
 
-        if (org.apache.commons.lang3.StringUtils.isNotEmpty(in.getCallBackURL())) {
+        if (StringUtils.isNotBlank(in.getCallBackURL())) {
             String callBackURL = in.getCallBackURL();
             String[] callbackURLs = callBackURL.trim().split("\\s*,\\s*");
             body.setRedirectUris(Arrays.asList(callbackURLs));
@@ -369,9 +369,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setApplicationTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Ignoring application token lifetime value as it is not a valid number");
-                        }
+                        log.debug("Ignoring application token lifetime value as it is not a valid number");
                     }
                 }
             }
@@ -391,9 +389,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setUserTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Ignoring user token lifetime value as it is not a valid number");
-                        }
+                        log.debug("Ignoring user token lifetime value as it is not a valid number");
                     }
                 }
             }
@@ -413,9 +409,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setRefreshTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Ignoring refresh token lifetime value as it is not a valid number");
-                        }
+                        log.debug("Ignoring refresh token lifetime value as it is not a valid number");
                     }
                 }
             }
@@ -435,9 +429,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         }
                         body.setIdTokenLifetime(expiry);
                     } catch (NumberFormatException e) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Ignoring ID token lifetime value as it is not a valid number");
-                        }
+                        log.debug("Ignoring ID token lifetime value as it is not a valid number");
                     }
                 }
             }
@@ -481,10 +473,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     public OAuthApplicationInfo updateApplicationOwner(OAuthAppRequest appInfoDTO, String owner)
             throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Application owner update is not supported for this key manager");
-        }
-
+        log.debug("Application owner update is not supported for this key manager");
         return null; //implementation is not applicable
     }
 
@@ -538,7 +527,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         AccessTokenInfo tokenInfo;
 
         if (tokenRequest == null) {
-            log.warn("No information available to generate Token.");
+            log.warn("No information available to generate token.");
             return null;
         }
 
@@ -571,12 +560,12 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
             }
 
         } catch (KeyManagerClientException e) {
-            throw new APIManagementException("Error occurred while calling token endpoint - " + e.getReason(), e);
+            throw new APIManagementException("Error occurred while calling token endpoint: " + e.getReason(), e);
         }
 
         tokenInfo = new AccessTokenInfo();
 
-        if (org.apache.commons.lang3.StringUtils.isNotEmpty(tokenResponse.getScope())) {
+        if (StringUtils.isNotBlank(tokenResponse.getScope())) {
             tokenInfo.setScope(tokenResponse.getScope().split(" "));
         } else {
             tokenInfo.setScope(new String[0]);
@@ -640,7 +629,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
             tokenInfo.setConsumerKey(response.getClientId());
         }
 
-        if (response.getScope() != null && !StringUtils.isBlank(response.getScope())) {
+        if (StringUtils.isNotBlank(response.getScope())) {
             tokenInfo.setScope(response.getScope().trim().split("\\s+"));
         } else {
             tokenInfo.setScope(new String[0]);
@@ -682,10 +671,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public OAuthApplicationInfo buildFromJSON(String s) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Building OAuth application information from JSON is not supported for this key manager.");
-        }
-
+        log.debug("Building OAuth application information from JSON is not supported for this key manager.");
         return null;
     }
 
@@ -706,86 +692,61 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public boolean registerNewResource(API api, Map resourceAttributes) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("New resource registration is not supported for this key manager");
-        }
-
+        log.debug("New resource registration is not supported for this key manager");
         return true;
     }
 
     @Override
     public Map getResourceByApiId(String apiId) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Resource retrieval by API ID is not supported for this key manager");
-        }
-
+        log.debug("Resource retrieval by API ID is not supported for this key manager");
         return null;
     }
 
     @Override
     public boolean updateRegisteredResource(API api, Map resourceAttributes) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Registered resource update is not supported for this key manager");
-        }
-
+        log.debug("Registered resource update is not supported for this key manager");
         return true;
     }
 
     @Override
     public void deleteRegisteredResourceByAPIId(String apiID) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Resource deletion by API ID is not supported for this key manager");
-        }
+        log.debug("Resource deletion by API ID is not supported for this key manager");
     }
 
     @Override
     public void deleteMappedApplication(String clientId) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Mapped application deletion is not supported for this key manager");
-        }
+        log.debug("Mapped application deletion is not supported for this key manager");
     }
 
     @Override
     public Set<String> getActiveTokensByConsumerKey(String consumerKey) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Retrieving active tokens by consumer key is not supported for this key manager.");
-        }
-
+        log.debug("Retrieving active tokens by consumer key is not supported for this key manager.");
         return Collections.emptySet();
     }
 
     @Override
     public AccessTokenInfo getAccessTokenByConsumerKey(String consumerKey) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Retrieving access token information by consumer key is not supported for this key manager.");
-        }
-
+        log.debug("Retrieving access token information by consumer key is not supported for this key manager.");
         return null;
     }
 
     @Override
     public String getNewApplicationConsumerSecret(AccessTokenRequest accessTokenRequest) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Generating a new application consumer secret is not supported for this key manager.");
-        }
-
+        log.debug("Generating a new application consumer secret is not supported for this key manager.");
         return null;
     }
 
     @Override
     public Map<String, Set<Scope>> getScopesForAPIS(String apiIdsString) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Retrieving scopes for APIs is not supported for this key manager.");
-        }
-
+        log.debug("Retrieving scopes for APIs is not supported for this key manager.");
         return null;
     }
 
@@ -828,9 +789,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public void attachResourceScopes(API api, Set<URITemplate> uriTemplates) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Attaching resource scopes is not supported for this key manager.");
-        }
+        log.debug("Attaching resource scopes is not supported for this key manager.");
     }
 
     @Override
@@ -864,7 +823,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         try {
             apiResourceClient.addScopes(globalApiResourceId, scopesToBeUpdated);
         } catch (FeignException e) {
-            handleException("Failed to add scopes to Global API Resource", e);
+            handleException("Failed to add scopes to global API resource", e);
         }
     }
 
@@ -882,7 +841,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         try {
             apiResourceScopesClient.deleteScope(globalApiResourceId, scopeName);
         } catch (feign.FeignException e) {
-            handleException("Failed to delete scope: " + scopeName + " from Asgardeo API Resource: " +
+            handleException("Failed to delete scope: " + scopeName + " from Asgardeo API resource: " +
                     AsgardeoConstants.GLOBAL_API_RESOURCE_NAME, e);
         }
     }
@@ -904,7 +863,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                     apiResourceScopesClient.updateScope(globalApiResourceId, scope.getKey(),
                             scopeInfo);
                 } catch (feign.FeignException e) {
-                    handleException("Failed to update scope: " + scope.getName() + " Asgardeo API Resource: " +
+                    handleException("Failed to update scope: " + scope.getName() + " Asgardeo API resource: " +
                             AsgardeoConstants.GLOBAL_API_RESOURCE_NAME, e);
                 }
             }
@@ -923,9 +882,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
     @Override
     public void validateScopes(Set<Scope> scopes) throws APIManagementException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Scopes validation is not supported for this key manager.");
-        }
+        log.debug("Scopes validation is not supported for this key manager.");
     }
 
     @Override
@@ -942,19 +899,17 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
             if (page.getApiResources() != null) {
                 for (AsgardeoAPIResourceResponse r : page.getApiResources()) {
                     if (globalApiResourceName.equals(r.getName())) {
-                        log.info("Asgardeo Global API Resource discovered successfully");
+                        log.info("Asgardeo global API resource discovered successfully");
                         return r.getId();
                     }
                 }
             }
         } catch (feign.FeignException e) {
-            handleException("Failed to fetch API Resources from Asgardeo", e);
+            handleException("Failed to fetch API resources from Asgardeo", e);
         }
 
         globalApiResourceId = null;
-
-        throw new APIManagementException("Failed to locate global API Resource on Asgardeo");
-
+        throw new APIManagementException("Failed to locate global API resource on Asgardeo");
     }
 
     /**
@@ -969,7 +924,6 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
         if (!enableRoleCreation) {
             return roleName;
         }
-        // When role creation is enabled, conventions of the WSO2 IS7 migration client are followed for roles.
         if (roleName.startsWith("Internal/")) {
             return roleName.replace("Internal/", StringUtils.EMPTY);
         } else if (roleName.startsWith("Application/")) {
@@ -1040,7 +994,7 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
      */
     private List<String> getRoles(Scope scope) {
 
-        if (org.apache.commons.lang3.StringUtils.isNotBlank(scope.getRoles()) &&
+        if (StringUtils.isNotBlank(scope.getRoles()) &&
                 scope.getRoles().trim().split(",").length > 0) {
             return Arrays.asList(scope.getRoles().trim().split(","));
         }
@@ -1322,9 +1276,8 @@ public class AsgardeoOAuthClient extends AbstractKeyManager {
                         .parse((String) additionalProperties);
                 for (Map.Entry<String, JsonElement> entry : additionalPropertiesJson.entrySet()) {
                     String additionalProperty = entry.getValue().getAsString();
-                    if (org.apache.commons.lang3.StringUtils.isNotBlank(additionalProperty) &&
-                            !org.apache.commons.lang3.StringUtils
-                                    .equals(additionalProperty, APIConstants.KeyManager.NOT_APPLICABLE_VALUE)) {
+                    if (StringUtils.isNotBlank(additionalProperty) &&
+                            !StringUtils.equals(additionalProperty, APIConstants.KeyManager.NOT_APPLICABLE_VALUE)) {
                         try {
                             if (AsgardeoConstants.PKCE_MANDATORY.equals(entry.getKey()) ||
                                     AsgardeoConstants.PKCE_SUPPORT_PLAIN.equals(entry.getKey()) ||

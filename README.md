@@ -17,11 +17,11 @@ ___
 ## Setting Up  
 > ⚠ This project was tested using Apache Maven 3.6.x.  
 > Using newer versions may cause dependency resolution issues.
-### A. Installing the Key Manager in WSO2 APIM 4.6.
+### A. Installing the Key Manager in WSO2 API Manager.
 1. Create a local copy of this repository.
 2. Run ``mvn clean install`` or `mvn clean install -DskipTests=true` in the root directory to build the Key Manager using Maven.
 3. Copy the generated JAR from `<REPOSITORY_ROOT>/components/asgardeo.key.manager/target` to `<APIM_HOME>/repository/components/dropins`
-4. Restart APIM 4.6
+4. Restart APIM
 
 ### B. Creating the Asgardeo Management Application
 1. Log into the [Asgardeo Console](https://console.asgardeo.io) and select the **organization** you want to use with APIM.
